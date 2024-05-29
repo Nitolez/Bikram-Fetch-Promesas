@@ -87,7 +87,7 @@ describe('API gitHub', function () {
 
     it('Ejercicio 6.- La función pinta la info del usuario', async function () {
         const response = await printGithubUserProfile('alenriquez96');
-        expect(response.img).toContain('https://avatars.githubusercontent.com/u/');
+        expect(response.avatar_url).toContain('https://avatars.githubusercontent.com/u/');
         expect(response.name).toEqual('Alberto Enríquez');
     });
 
