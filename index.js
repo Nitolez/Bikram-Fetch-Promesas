@@ -169,29 +169,73 @@ la estructura debe ser exactamente la misma:
 
 const getAndPrintGitHubUserProfile = async (username) => {
     try {
-        const resp = await fetch(`https://api.github.com/users/${username}`, { method: 'GET' })
+        const resp = await fetch(`https://api.github.com/users/${username}`, { method: 'GET' });
 
         if (resp.ok) {
-            const tarjeta = document.querySelector("#tarjeta")
-            const data = await resp.json()
-            const elementoSection = document.createElement('section')
-            
-            elementoSection.innerHTML = `<img src="${avatar_url}" alt="imagen de usuario">
-            <h1>${username}</h1>
-            <p>Public repos: ${public_repos}</p>`
+            const data = await resp.json();
 
-            tarjeta.append(elementoSection)
+            const { avatar_url, public_repos, name } = data;
+            const displayName = name || username;
 
-            return data
+            const htmlString = `<section>
+                                    <img src="${avatar_url}" alt="${displayName}">
+                                    <h1>${displayName}</h1>
+                                    <p>Public repos: ${public_repos}</p>
+                                </section>`;
+
+            const tarjeta = document.querySelector("#tarjeta");
+            tarjeta.innerHTML = htmlString;
+
+            return htmlString;
         } else {
-            throw console.log("Error")
+            console.log("Error.");
         }
     } catch (error) {
-        console.log("Error 2")
+        console.log("Error 2");
     }
 }
+
 /*
 getAndPrintGitHubUserProfile('Nitolez')
     .then((perfil) => { console.log(perfil) })
-    .catch((error) => { console.log(error) })
-*/
+    .catch((error) => { console.log(error) })*/
+
+
+/*9.- Dada una lista de usuarios de github guardada en una array,crea una funcion **fetchGithubUsers(userNames)** 
+que utilice 'https://api.github.com/users/${name}' para obtener el nombre de cada usuario. \
+Objetivo: Usar Promise.all()\
+Recordatorio: Una llamada a fetch() devuelve un objeto promesa.\
+Pregunta. ¿cuántas promesas tendremos?
+
+Hasta que no se resuelvan todas las promesas desencadenadas por cada fetch(), no se cargarán los datos.
+
+Pasos:
+
+- Mapear el array y hacer un fetch() para cada usuario. Esto nos de vuelve un array lleno de promesas.
+- Con Promise.all() harás que se tenga que resolver todo el proceso de peticiones a GitHub a la vez.
+- Cuando Promise.all() haya terminado:
+Consigue que se imprima por consola la url del repositorio de cada usuario.
+Consigue que se imprima por consola el nombre de cada usuario.*/
+
+const fetchGithubUsers = async (userNames) => {
+    try {
+        const promises = userNames.map(username => fetch(`https://api.github.com/users/${username}`, { method: 'GET' }))
+        const promesasJuntas = await Promise.all(promises)
+        //Promise.all() devuelve un único Promise
+        const data = promesasJuntas.map(response => {
+            if (!response.ok) {
+                throw new Error(`Error fetching data for user: ${response.url}`);
+            }
+            return response.json();
+        });
+
+        const usersData = await Promise.all(data);
+
+        usersData.forEach(user => {
+            console.log(`URL de repositorio: ${user.repos_url}`);
+            console.log(`Username: ${user.name || user.login}`);
+        });
+    } catch (error) {
+        console.error('Error fetching GitHub users:', error);
+    }
+}
