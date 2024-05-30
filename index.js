@@ -11,7 +11,7 @@ const getAllBreeds = async () => {
             const data = await respuesta.json();
             return Object.keys(data.message); // Devuelve un array con todas las razas
         } else {
-            throw new Error('Error en la respuesta del servidor');
+            throw console.log('Error en la respuesta del servidor');
         }
     } catch (error) {
         console.log('Error al obtener las razas:');
@@ -224,7 +224,7 @@ const fetchGithubUsers = async (userNames) => {
         //Promise.all() devuelve un único Promise
         const data = promesasJuntas.map(response => {
             if (!response.ok) {
-                throw new Error(`Error fetching data for user: ${response.url}`);
+                throw console.log(`Error}`);
             }
             return response.json();
         });
@@ -236,6 +236,6 @@ const fetchGithubUsers = async (userNames) => {
             console.log(`Username: ${user.name || user.login}`);
         });
     } catch (error) {
-        console.error('Error fetching GitHub users:', error);
+        console.error('Error 2', error);
     }
 }
